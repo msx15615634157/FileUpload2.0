@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <h2 id="title"></h2>
+    <form  method="post" enctype="multipart/form-data" >
+        <input name="file" type="file"/>
+        <button type="button" onclick="ajaxsubmit()" value="">文件上传</button>
+    </form>
+    <button onclick="back()">后退</button>
+</div>
+<div id="content"></div>
+</body>
+<script>
+    var taken=window.localStorage.getItem("taken")
+    function back() {
+        fetch("/back/"+taken).then(res=>{
+            location.reload();
+        });
+    }
+    function ajaxsubmit(){
+        let formData = new FormData();
+        let fileField = document.querySelector("input[type='file']");
+
+        formData.append('file', fileField.files[0]);
+        fetch('upload/'+taken, {
+            method: 'post',
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data=>{
+                alert(data.msg)
+                location.reload();
+
+            })
+    }
+    !(function () {
+        let taken=window.localStorage.getItem("taken");
+        let reqpath="getlist";
+        if(taken!=null||taken!=""){
+          reqpath=reqpath+"?taken="+taken;
+        }
+
+        fetch(reqpath).then((res)=>{return res.json()}).then(data=>{
+            let content = document.getElementById("content");
+            if(data.status=="NO"){
+                window.localStorage.setItem("taken",data.taken)
+                window.alert("没有令牌或令牌失效，已重新设置")
+            }
+            let title = document.getElementById("title");
+            title.textContent=data.message;
+            data=data.fileList;
+            for (let i = 0; i < data.length; i++) {
+                let a = document.createElement("a");
+                a.setAttribute("href","file/"+data[i].name+"/"+data[i].type+"/"+window.localStorage.getItem("taken"))
+                if(data[i].type=="file"){
+                    a.textContent=data[i].name+"----"+data[i].modifytime+"-------"+data[i].type+"-------"+data[i].size
+                }else {
+                    a.textContent=data[i].name+"----"+data[i].modifytime+"-------"+data[i].type
+                }
+
+                content.appendChild(a)
+                content.appendChild(document.createElement("br"))
+            }
+
+
+        })
+       })()
+
+</script>
+</html>
