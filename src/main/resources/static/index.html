@@ -58,9 +58,9 @@
                 let a = document.createElement("a");
                 a.setAttribute("href","file/"+data[i].name+"/"+data[i].type+"/"+window.localStorage.getItem("taken"))
                 if(data[i].type=="file"){
-                    a.textContent=data[i].name+"----"+data[i].modifytime+"-------"+data[i].type+"-------"+data[i].size
+                    a.innerHTML=formatStr(data[i].name)+"----"+data[i].modifytime+"-------"+data[i].type+"-------"+data[i].size
                 }else {
-                    a.textContent=data[i].name+"----"+data[i].modifytime+"-------"+data[i].type
+                    a.innerHTML=formatStr(data[i].name)+"----"+data[i].modifytime+"-------"+data[i].type
                 }
 
                 content.appendChild(a)
@@ -70,6 +70,14 @@
 
         })
        })()
-
+function formatStr(str) {
+if(str.length<40){
+    let t=40-str.length;
+    for(let i=0;i<t;i++){
+        str+="&nbsp;"
+    }
+    return str;
+}
+}
 </script>
 </html>

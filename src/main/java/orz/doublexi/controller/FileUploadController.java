@@ -39,7 +39,7 @@ public class FileUploadController {
     @RequestMapping("/file/{filename:.+}/file/{taken}")
     @ResponseBody
     public ResponseEntity serveFile(@PathVariable String filename,@PathVariable String taken) {
-            Resource file = new FileSystemResource(takens.get(taken).getPath()+"\\"+filename);
+            Resource file = new FileSystemResource(takens.get(taken).getPath()+File.separator+filename);
             return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                     "attachment; filename=\"" + file.getFilename() + "\"").body(file);
 
@@ -48,7 +48,7 @@ public class FileUploadController {
     public RedirectView serveDirectory(@PathVariable String filename, @PathVariable String taken) {
          LOGGER.info("serveDirectory method executed");
         Taken tak = takens.get(taken);
-        tak.setPath(tak.getPath()+"\\"+filename);
+        tak.setPath(tak.getPath()+File.separator+filename);
         tak.setMessage("进入到目录:"+tak.getPath());
         return new RedirectView("/index.html");
     }
@@ -71,7 +71,7 @@ public class FileUploadController {
         String fileName = UUID.randomUUID().toString().substring(0,5)+"_"+file.getOriginalFilename();
         HashMap<String, String> response = new HashMap<>();
         try {
-            file.transferTo(new File(new File(tak.getPath()+"\\"+fileName).getAbsolutePath()));
+            file.transferTo(new File(new File(tak.getPath()+File.separator+fileName).getAbsolutePath()));
         } catch (Exception e) {
             tak.setMessage("出现错误"+e.getMessage());
             response.put("status", "no");
